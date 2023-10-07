@@ -20,8 +20,7 @@ int main() {
         return 1;
     }
 
-    std::string code((std::istreambuf_iterator<char>(inputFile)),
-                     std::istreambuf_iterator<char>());
+    std::string code((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
     inputFile.close();
 
     // Сохраняем исходный код во временный файл
@@ -37,30 +36,68 @@ int main() {
     }
 
 
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-    // Запускаем
-    int run_status = system("temp_program.exe");
-    if (run_status != 0) {
-        std::cerr << "Ошибка выполнения" << std::endl;
-        return 1;
-    }
 
+
+    for (int i = 1; i <= 2; i++) {
+        string suka = "input" + to_string(i) + ".txt";
+        freopen(suka.c_str(), "r", stdin);
+        freopen(("output" + to_string(i) + ".txt").c_str(), "w", stdout);
+        // Запускаем
+        int run_status = system("temp_program.exe");
+        if (run_status != 0) {
+            std::cerr << "Ошибка выполнения" << std::endl;
+            return 1;
+        }
+
+        freopen("CON","w",stdout);
+        freopen("CON","r",stdin);
+        vector<string> c_o, o;
+        string temp_str;
+
+        string str = ("correct_output" + to_string(i) + ".txt");
+        /*cout << str << endl;
+        freopen(str.c_str(), "r", stdin);
+        while (getline(cin, temp_str)) {
+            c_o.push_back(temp_str);
+        }
+        */
+
+        ifstream file_c_o;
+        str = "correct_output" + to_string(i) + ".txt";
+        file_c_o.open(str);
+        while (getline(file_c_o, temp_str)) {
+            c_o.push_back(temp_str);
+        }
+        file_c_o.close();
+
+        ifstream file_o;
+        str = "output" + to_string(i) + ".txt";
+        file_o.open(str);
+        while (getline(file_o, temp_str)) {
+            o.push_back(temp_str);
+        }
+        file_o.close();
+        bool is_OK = true;
+        //cout << c_o.size() << " " << o.size() << endl;
+        //cout << c_o[i-1] << " " << o[i-1] << endl;
+        if (c_o.size() != o.size()) {
+            cout << "WA" << i << endl;
+            continue;
+        }
+        for (int j = 0; j < c_o.size(); j++) {
+            if (c_o[j] != o[j]) {
+                is_OK = false;
+                break;
+            }
+        }
+        if (is_OK) {
+            cout << "OK" << i << endl;
+        } else {
+            cout << "WA" << i << endl;
+        }
+    }
     // Удаление временных файлов
     system("del temp_source.cpp");
     system("del temp_program.exe");
-
-    freopen("CON","w",stdout);
-    freopen("CON","r",stdin);
-
-    vector<string> c_o, o;
-    int temp_str;
-
-    freopen("correct_output.txt", "r", stdin);
-    cout << "text\n";
-    cin >> temp_str;
-    cout << "123" << endl;
-    cout << temp_str << endl;
-
     return 0;
 }
