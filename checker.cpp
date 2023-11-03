@@ -37,11 +37,13 @@ int main() {
 
 
 
-
-    for (int i = 1; i <= 2; i++) {
-        string suka = "input" + to_string(i) + ".txt";
+    string task_name;
+    cout << "Task name: ";
+    cin >> task_name;
+    for (int i = 1; i <= 52; i++) {
+        string suka = task_name + "/" + to_string(i) + ".in";
         freopen(suka.c_str(), "r", stdin);
-        freopen(("output" + to_string(i) + ".txt").c_str(), "w", stdout);
+        freopen((task_name + "/result" + to_string(i) + ".txt").c_str(), "w", stdout);
         // Запускаем
         int run_status = system("temp_program.exe");
         if (run_status != 0) {
@@ -54,16 +56,10 @@ int main() {
         vector<string> c_o, o;
         string temp_str;
 
-        string str = ("correct_output" + to_string(i) + ".txt");
-        /*cout << str << endl;
-        freopen(str.c_str(), "r", stdin);
-        while (getline(cin, temp_str)) {
-            c_o.push_back(temp_str);
-        }
-        */
+        string str;
 
         ifstream file_c_o;
-        str = "correct_output" + to_string(i) + ".txt";
+        str = (task_name +"/" + to_string(i) + ".out");
         file_c_o.open(str);
         while (getline(file_c_o, temp_str)) {
             c_o.push_back(temp_str);
@@ -71,7 +67,7 @@ int main() {
         file_c_o.close();
 
         ifstream file_o;
-        str = "output" + to_string(i) + ".txt";
+        str = task_name + "/result" + to_string(i) + ".txt";
         file_o.open(str);
         while (getline(file_o, temp_str)) {
             o.push_back(temp_str);
