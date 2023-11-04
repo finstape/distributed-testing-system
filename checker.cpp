@@ -2,21 +2,17 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
-#include <windows.h>
 #include <vector>
-
-using namespace std;
+#include <algorithm>
 
 int main() {
-    SetConsoleOutputCP(CP_UTF8);
-
     // Имя файла для чтения
     std::string filename = "source.cpp";
 
     // Чтение содержимого файла
     std::ifstream inputFile(filename);
     if (!inputFile) {
-        std::cerr << "Ошибка открытия файла " << filename << std::endl;
+        std::cerr << "Error opening file \"" << filename << "\"" << std::endl;
         return 1;
     }
 
@@ -29,71 +25,70 @@ int main() {
     outputFile.close();
 
     // Компилируем
-    int compile_status = system("g++ temp_source.cpp -o temp_program.exe");
+    int compile_status = system("g++ temp_source.cpp -o temp_program");
     if (compile_status != 0) {
-        std::cerr << "Ошибка компиляции" << std::endl;
+        std::cerr << "CE" << std::endl;
         return 1;
     }
 
+    std::string task_name;
+    std::cout << "Task name: ";
+    std::cin >> task_name;
 
-
-    string task_name;
-    cout << "Task name: ";
-    cin >> task_name;
     for (int i = 1; i <= 52; i++) {
-        string suka = task_name + "/" + to_string(i) + ".in";
-        freopen(suka.c_str(), "r", stdin);
-        freopen((task_name + "/result" + to_string(i) + ".txt").c_str(), "w", stdout);
+        std::string task_input = task_name + "/" + std::to_string(i) + ".in";
+
         // Запускаем
-        int run_status = system("temp_program.exe");
+        int run_status = system(("cat " + task_input + "| ./temp_program > temp_output.txt").c_str());
         if (run_status != 0) {
             std::cerr << "Ошибка выполнения" << std::endl;
             return 1;
         }
 
-        freopen("CON","w",stdout);
-        freopen("CON","r",stdin);
-        vector<string> c_o, o;
-        string temp_str;
+        std::vector<std::string> correct_data, temp_data;
+        std::string temp_str;
 
-        string str;
+        std::string str;
 
-        ifstream file_c_o;
-        str = (task_name +"/" + to_string(i) + ".out");
-        file_c_o.open(str);
-        while (getline(file_c_o, temp_str)) {
-            c_o.push_back(temp_str);
+        std::ifstream correct_output;
+        str = task_name +"/" + std::to_string(i) + ".out";
+        correct_output.open(str);
+        while (getline(correct_output, temp_str)) {
+            std::string::iterator it = std::remove(temp_str.begin(), temp_str.end(), '\r');
+            temp_str.erase(it, temp_str.end());
+            correct_data.push_back(temp_str);
         }
-        file_c_o.close();
+        correct_output.close();
 
-        ifstream file_o;
-        str = task_name + "/result" + to_string(i) + ".txt";
-        file_o.open(str);
-        while (getline(file_o, temp_str)) {
-            o.push_back(temp_str);
+        std::ifstream source_output;
+        source_output.open("temp_output.txt");
+        while (getline(source_output, temp_str)) {
+            temp_data.push_back(temp_str);
         }
-        file_o.close();
+        source_output.close();
         bool is_OK = true;
-        //cout << c_o.size() << " " << o.size() << endl;
-        //cout << c_o[i-1] << " " << o[i-1] << endl;
-        if (c_o.size() != o.size()) {
-            cout << "WA" << i << endl;
-            continue;
+        if (correct_data.size() != temp_data.size()) {
+            std::cout << "PE " << i << std::endl;
+            break;
         }
-        for (int j = 0; j < c_o.size(); j++) {
-            if (c_o[j] != o[j]) {
+
+        for (int j = 0; j < correct_data.size(); j++) {
+            if (correct_data[j] != temp_data[j]) {
                 is_OK = false;
                 break;
             }
         }
         if (is_OK) {
-            cout << "OK" << i << endl;
+            std::cout << "OK " << i << std::endl;
         } else {
-            cout << "WA" << i << endl;
+            std::cout << "WA " << i << std::endl;
+            break;
         }
     }
+
     // Удаление временных файлов
-    system("del temp_source.cpp");
-    system("del temp_program.exe");
+    system("rm temp_source.cpp");
+    system("rm temp_program");
+    system("rm temp_output.txt");
     return 0;
 }
