@@ -4,6 +4,35 @@
 #include <cstdlib>
 #include <vector>
 #include <algorithm>
+#include <chrono>
+#include <atomic>
+#include <thread>
+
+void exit_program() {
+    system("rm temp_source.cpp");
+    system("rm temp_program");
+    system("rm temp_output.txt");
+    system("rm temp_count.txt");
+}
+
+void get_tests_number(int &count_tests, std::string &task_name) {
+    system("touch temp_count.txt");
+    std::ifstream count_file("temp_count.txt");
+    system(("ls " + task_name + " | grep in | wc -l > temp_count.txt").c_str());
+    count_file >> count_tests;
+    count_file.close();
+}
+
+void run_source(std::string &task_input, int &test_index) {
+    std::string max_runtime_awake = "10s";
+    // usr/bin/time -f "&U %M" bash -c 'cat | ./source > temp_output.txt' > temp_runtime_info.txt
+    int run_status = system(("cat " + task_input + " | timeout " + max_runtime_awake + " ./temp_program > temp_output.txt").c_str());
+    if (run_status != 0) {
+        std::cout << "RE " << test_index << std::endl;
+        exit_program();
+        exit(1);
+    }
+}
 
 int main() {
     // Имя файла для чтения
@@ -25,9 +54,10 @@ int main() {
     outputFile.close();
 
     // Компилируем
-    int compile_status = system("g++ temp_source.cpp -o temp_program");
+    int compile_status = system("g++ -O2 temp_source.cpp -o temp_program");
     if (compile_status != 0) {
         std::cerr << "CE" << std::endl;
+        exit_program();
         return 1;
     }
 
@@ -35,14 +65,39 @@ int main() {
     std::cout << "Task name: ";
     std::cin >> task_name;
 
-    for (int i = 1; i <= 52; i++) {
+    int count_tests = 0;
+    get_tests_number(count_tests, task_name);
+    if (count_tests == 0) {
+        std::cout << "Incorrect task name" << std::endl;
+        exit_program();
+        return 2;
+    }
+
+    bool final_verdict = true;
+    for (int i = 1; i <= count_tests; i++) {
         std::string task_input = task_name + "/" + std::to_string(i) + ".in";
 
         // Запускаем
-        int run_status = system(("cat " + task_input + "| ./temp_program > temp_output.txt").c_str());
-        if (run_status != 0) {
-            std::cerr << "Ошибка выполнения" << std::endl;
-            return 1;
+        std::atomic<bool> is_done(false);
+        std::thread t([&is_done, &task_input, &i]{
+            run_source(task_input, i);
+            is_done = true;
+        });
+
+        // Проверка на то, что программа завершится в адекватное время (step в милисекундах)
+        for (size_t step = 10; step <= 2000; step += 10) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            if (is_done) {
+                t.join();
+                break;
+            }
+        }
+
+        if (!is_done) {
+            t.detach();
+            std::cout << "TL " << i << std::endl;
+            exit_program();
+            exit(2);
         }
 
         std::vector<std::string> correct_data, temp_data;
@@ -69,6 +124,7 @@ int main() {
         bool is_OK = true;
         if (correct_data.size() != temp_data.size()) {
             std::cout << "PE " << i << std::endl;
+            final_verdict = false;
             break;
         }
 
@@ -78,17 +134,14 @@ int main() {
                 break;
             }
         }
-        if (is_OK) {
-            std::cout << "OK " << i << std::endl;
-        } else {
+        if (!is_OK) {
             std::cout << "WA " << i << std::endl;
+            final_verdict = false;
             break;
         }
     }
 
-    // Удаление временных файлов
-    system("rm temp_source.cpp");
-    system("rm temp_program");
-    system("rm temp_output.txt");
+    if (final_verdict) std::cout << "OK" << std::endl;
+    exit_program();
     return 0;
 }
