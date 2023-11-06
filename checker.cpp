@@ -8,11 +8,10 @@
 #include <atomic>
 #include <thread>
 
-void exit_program() {
-    system("rm temp_source.cpp");
-    system("rm temp_program");
-    system("rm temp_output.txt");
-    system("rm temp_count.txt");
+void exit_program(int code) {
+    // delete temp_source.cpp temp_program temp_output.txt temp_count.txt temp_runtime_info.txt
+    system("rm temp*");
+    exit(code);
 }
 
 void get_tests_number(int &count_tests, std::string &task_name) {
@@ -25,13 +24,20 @@ void get_tests_number(int &count_tests, std::string &task_name) {
 
 void run_source(std::string &task_input, int &test_index) {
     std::string max_runtime_awake = "10s";
-    // usr/bin/time -f "&U %M" bash -c 'cat | ./source > temp_output.txt' > temp_runtime_info.txt
-    int run_status = system(("cat " + task_input + " | timeout " + max_runtime_awake + " ./temp_program > temp_output.txt").c_str());
+    system("touch temp_runtime_info.txt");
+    int run_status = system(("/usr/bin/time -o temp_runtime_info.txt -f \"%U %M\" bash -c 'cat " + task_input + " | timeout " + max_runtime_awake + " ./temp_program > temp_output.txt'").c_str());
     if (run_status != 0) {
-        std::cout << "RE " << test_index << std::endl;
-        exit_program();
-        exit(1);
+        std::cout << "RE " << test_index << std::endl;   // вычисление RE неподтверждено
+        exit_program(1);
     }
+}
+
+void get_runtime_info(double &time_usage, double &memory_usage) {
+    std::ifstream runtime_info;
+    runtime_info.open("temp_runtime_info.txt");
+    runtime_info >> time_usage >> memory_usage;
+    runtime_info.close();
+    memory_usage = memory_usage/1024.0;
 }
 
 int main() {
@@ -53,24 +59,27 @@ int main() {
     outputFile << code;
     outputFile.close();
 
-    // Компилируем
-    int compile_status = system("g++ -O2 temp_source.cpp -o temp_program");
-    if (compile_status != 0) {
-        std::cerr << "CE" << std::endl;
-        exit_program();
-        return 1;
-    }
-
+    // Получаем имя задачи
     std::string task_name;
     std::cout << "Task name: ";
     std::cin >> task_name;
 
+    // Считаем количество тестов и получаем ограничения
     int count_tests = 0;
     get_tests_number(count_tests, task_name);
     if (count_tests == 0) {
         std::cout << "Incorrect task name" << std::endl;
-        exit_program();
-        return 2;
+        exit_program(2);
+    }
+
+    // время в секундах, память в мегабайтах
+    double time_limit = 2.0, memory_limit = 128.0;
+
+    // Компилируем
+    int compile_status = system("g++ -O2 temp_source.cpp -o temp_program");
+    if (compile_status != 0) {
+        std::cerr << "CE" << std::endl;
+        exit_program(1);
     }
 
     bool final_verdict = true;
@@ -84,7 +93,7 @@ int main() {
             is_done = true;
         });
 
-        // Проверка на то, что программа завершится в адекватное время (step в милисекундах)
+        // Проверка на то, что программа завершится в адекватное время (2 секунды, проверяем каждые 10 мс)
         for (size_t step = 10; step <= 2000; step += 10) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             if (is_done) {
@@ -96,18 +105,26 @@ int main() {
         if (!is_done) {
             t.detach();
             std::cout << "TL " << i << std::endl;
-            exit_program();
-            exit(2);
+            exit_program(2);
+        }
+
+        // Проверка на TL и ML
+        double time_usage, memory_usage;
+        get_runtime_info(time_usage, memory_usage);
+        if (time_usage > time_limit || memory_usage > memory_limit) {
+            if (time_usage > time_limit) {
+                std::cout << "TL " << i << std::endl;
+            } else {
+                std::cout << "ML " << i << std::endl;
+            }
+            exit_program(2);
         }
 
         std::vector<std::string> correct_data, temp_data;
         std::string temp_str;
 
-        std::string str;
-
         std::ifstream correct_output;
-        str = task_name +"/" + std::to_string(i) + ".out";
-        correct_output.open(str);
+        correct_output.open(task_name +"/" + std::to_string(i) + ".out");
         while (getline(correct_output, temp_str)) {
             std::string::iterator it = std::remove(temp_str.begin(), temp_str.end(), '\r');
             temp_str.erase(it, temp_str.end());
@@ -124,8 +141,7 @@ int main() {
         bool is_OK = true;
         if (correct_data.size() != temp_data.size()) {
             std::cout << "PE " << i << std::endl;
-            final_verdict = false;
-            break;
+            exit_program(2);
         }
 
         for (int j = 0; j < correct_data.size(); j++) {
@@ -142,6 +158,6 @@ int main() {
     }
 
     if (final_verdict) std::cout << "OK" << std::endl;
-    exit_program();
-    return 0;
+    else std::cout << "Checker error" << std::endl;
+    exit_program(0);
 }
