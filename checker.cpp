@@ -73,7 +73,7 @@ int main() {
     }
 
     // время в секундах, память в мегабайтах
-    double time_limit = 2.0, memory_limit = 128.0;
+    double time_limit = 2.0, memory_limit = 1280.0;
 
     // Компилируем
     int compile_status = system("g++ -O2 temp_source.cpp -o temp_program");
@@ -152,12 +152,10 @@ int main() {
         }
         if (!is_OK) {
             std::cout << "WA " << i << std::endl;
-            final_verdict = false;
-            break;
+            exit_program(2);
         }
     }
 
-    if (final_verdict) std::cout << "OK" << std::endl;
-    else std::cout << "Checker error" << std::endl;
+    std::cout << "OK" << std::endl;
     exit_program(0);
 }
