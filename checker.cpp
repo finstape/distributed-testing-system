@@ -40,9 +40,10 @@ void get_runtime_info(double &time_usage, double &memory_usage) {
     memory_usage = memory_usage/1024.0;
 }
 
-int main() {
+int main(int argc, char** argv) {
     // Имя файла для чтения
-    std::string filename = "source.cpp";
+    std::string filename = argv[1];
+    std::cout << filename << std::endl;
 
     // Чтение содержимого файла
     std::ifstream inputFile(filename);
@@ -61,8 +62,11 @@ int main() {
 
     // Получаем имя задачи
     std::string task_name;
-    std::cout << "Task name: ";
-    std::cin >> task_name;
+    //std::cout << "Task name: ";
+    //std::cin >> task_name;
+    task_name = argv[2];
+
+    std::cout << task_name << std::endl;
 
     // Считаем количество тестов и получаем ограничения
     int count_tests = 0;
