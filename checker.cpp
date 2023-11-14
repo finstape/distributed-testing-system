@@ -8,6 +8,13 @@
 #include <atomic>
 #include <thread>
 
+// {verdict, test, max_time_used, max_memory_used}
+std::vector <std::string> result(4);
+
+void return_result() {
+    std::cout << result[0] << " " << result[1] << " " << result[2] << " " << result[3];
+}
+
 void exit_program(int code) {
     // delete temp_source.cpp temp_program temp_output.txt temp_count.txt temp_runtime_info.txt
     system("rm temp*");
@@ -80,12 +87,19 @@ int main(int argc, char** argv) {
     // Компилируем
     int compile_status = system("g++ -O2 temp_source.cpp -o temp_program");
     if (compile_status != 0) {
-        std::cerr << "CE" << std::endl;
+        result[0] = "CE";
+        result[1] = "1";
+        result[2] = "0";
+        result[3] = "0";
+        return_result();
         exit_program(1);
     }
 
     for (int i = 1; i <= count_tests; i++) {
         std::string task_input = task_name + "/" + std::to_string(i) + ".in";
+
+        // Меняем номер теста в результате
+        result[1] = std::to_string(i);
 
         // Запускаем
         std::atomic<bool> is_done(false);
@@ -105,7 +119,9 @@ int main(int argc, char** argv) {
 
         if (!is_done) {
             t.detach();
-            std::cout << "TL " << i << std::endl;
+            result[0] = "TL";
+            result[2] = "2000";
+            return_result();
             exit_program(2);
         }
 
@@ -114,10 +130,13 @@ int main(int argc, char** argv) {
         get_runtime_info(time_usage, memory_usage);
         if (time_usage > time_limit || memory_usage > memory_limit) {
             if (time_usage > time_limit) {
-                std::cout << "TL " << i << std::endl;
+                result[0] = "TL";
+                result[2] = "2000";
             } else {
-                std::cout << "ML " << i << std::endl;
+                result[0] = "ML";
+                result[2] = std::to_string(memory_limit);
             }
+            return_result();
             exit_program(2);
         }
 
@@ -157,6 +176,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    std::cout << "OK" << std::endl;
+    result[0] = "OK";
+    return_result();
     exit_program(0);
 }
