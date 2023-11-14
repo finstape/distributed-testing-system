@@ -40,9 +40,10 @@ void get_runtime_info(double &time_usage, double &memory_usage) {
     memory_usage = memory_usage/1024.0;
 }
 
-int main() {
+int main(int argc, char** argv) {
     // Имя файла для чтения
-    std::string filename = "source.cpp";
+    std::string filename = argv[1];
+    std::cout << filename << std::endl;
 
     // Чтение содержимого файла
     std::ifstream inputFile(filename);
@@ -61,8 +62,9 @@ int main() {
 
     // Получаем имя задачи
     std::string task_name;
-    std::cout << "Task name: ";
-    std::cin >> task_name;
+    task_name = argv[2];
+
+    std::cout << task_name << std::endl;
 
     // Считаем количество тестов и получаем ограничения
     int count_tests = 0;
@@ -73,7 +75,7 @@ int main() {
     }
 
     // время в секундах, память в мегабайтах
-    double time_limit = 2.0, memory_limit = 128.0;
+    double time_limit = 2.0, memory_limit = 1280.0;
 
     // Компилируем
     int compile_status = system("g++ -O2 temp_source.cpp -o temp_program");
@@ -82,7 +84,6 @@ int main() {
         exit_program(1);
     }
 
-    bool final_verdict = true;
     for (int i = 1; i <= count_tests; i++) {
         std::string task_input = task_name + "/" + std::to_string(i) + ".in";
 
@@ -152,12 +153,10 @@ int main() {
         }
         if (!is_OK) {
             std::cout << "WA " << i << std::endl;
-            final_verdict = false;
-            break;
+            exit_program(2);
         }
     }
 
-    if (final_verdict) std::cout << "OK" << std::endl;
-    else std::cout << "Checker error" << std::endl;
+    std::cout << "OK" << std::endl;
     exit_program(0);
 }
