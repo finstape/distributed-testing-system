@@ -34,7 +34,8 @@ void run_source(std::string &task_input, int &test_index) {
     system("touch temp_runtime_info.txt");
     int run_status = system(("/usr/bin/time -o temp_runtime_info.txt -f \"%U %M\" bash -c 'cat " + task_input + " | timeout " + max_runtime_awake + " ./temp_program > temp_output.txt'").c_str());
     if (run_status != 0) {
-        std::cout << "RE " << test_index << std::endl;   // вычисление RE неподтверждено
+        result[0] = "RE";   // вычисление RE неподтверждено
+        result[1] = std::to_string(test_index);
         exit_program(1);
     }
 }
@@ -50,7 +51,7 @@ void get_runtime_info(double &time_usage, double &memory_usage) {
 int main(int argc, char** argv) {
     // Имя файла для чтения
     std::string filename = argv[1];
-    std::cout << filename << std::endl;
+    // std::cout << filename << std::endl;
 
     // Чтение содержимого файла
     std::ifstream inputFile(filename);
@@ -71,7 +72,7 @@ int main(int argc, char** argv) {
     std::string task_name;
     task_name = argv[2];
 
-    std::cout << task_name << std::endl;
+    // std::cout << task_name << std::endl;
 
     // Считаем количество тестов и получаем ограничения
     int count_tests = 0;
@@ -131,14 +132,19 @@ int main(int argc, char** argv) {
         if (time_usage > time_limit || memory_usage > memory_limit) {
             if (time_usage > time_limit) {
                 result[0] = "TL";
-                result[2] = "2000";
+                result[2] = std::to_string(time_limit);
+                result[3] = std::to_string(memory_usage);
             } else {
                 result[0] = "ML";
-                result[2] = std::to_string(memory_limit);
+                result[2] = std::to_string(time_usage);
+                result[3] = std::to_string(memory_limit);
             }
             return_result();
             exit_program(2);
         }
+
+        result[2] = std::to_string(std::max(std::stod(result[2]), time_usage));
+        result[3] = std::to_string(std::max(std::stod(result[3]), memory_usage));
 
         std::vector<std::string> correct_data, temp_data;
         std::string temp_str;
@@ -160,7 +166,10 @@ int main(int argc, char** argv) {
         source_output.close();
         bool is_OK = true;
         if (correct_data.size() != temp_data.size()) {
-            std::cout << "PE " << i << std::endl;
+            result[0] = "PE";
+            result[2] = std::to_string(time_usage);
+            result[3] = std::to_string(memory_usage);
+            return_result();
             exit_program(2);
         }
 
@@ -171,7 +180,10 @@ int main(int argc, char** argv) {
             }
         }
         if (!is_OK) {
-            std::cout << "WA " << i << std::endl;
+            result[0] = "WA";
+            result[2] = std::to_string(time_usage);
+            result[3] = std::to_string(memory_usage);
+            return_result();
             exit_program(2);
         }
     }
