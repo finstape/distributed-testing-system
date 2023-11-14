@@ -62,8 +62,6 @@ int main(int argc, char** argv) {
 
     // Получаем имя задачи
     std::string task_name;
-    //std::cout << "Task name: ";
-    //std::cin >> task_name;
     task_name = argv[2];
 
     std::cout << task_name << std::endl;
@@ -86,7 +84,6 @@ int main(int argc, char** argv) {
         exit_program(1);
     }
 
-    bool final_verdict = true;
     for (int i = 1; i <= count_tests; i++) {
         std::string task_input = task_name + "/" + std::to_string(i) + ".in";
 
