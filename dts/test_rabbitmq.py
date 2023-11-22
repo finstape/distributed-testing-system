@@ -4,5 +4,6 @@ credentials = pika.PlainCredentials(username='dj-dts', password='zumfy6-zYkteg-m
 parameters = pika.ConnectionParameters(host='localhost', credentials=credentials, port='5672')
 connection = pika.BlockingConnection(parameters)
 
-print("соединение с rabbitmq установлено")
+# Если выполнение дошло до этой строки, соединение успешно установлено.
+print("Соединение с RabbitMQ установлено.")
 connection.close()

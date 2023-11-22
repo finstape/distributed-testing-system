@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,14 +25,12 @@ SECRET_KEY = '26Gk},Gp(tRE2x(Pc>D:jgs/P|A[THzOL$Jb7XiU~jmI61txdm4vwohwd!skt4(i#*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
 ALLOWED_HOSTS = []
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -72,11 +69,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dts.wsgi.application'
-ASGI_APPLICATION = "dts.asgi.application"
-
-# SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
 
 
 # Database

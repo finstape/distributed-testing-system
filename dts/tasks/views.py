@@ -15,22 +15,32 @@ from django.db.models import F, Count
 from .models import Task, CTest, CodeSubmit
 
 from .tasks import process_code_cpp
+from celery.result import AsyncResult
+
+def get_result(request, task_id):
+    try:
+        # Получение результата по идентификатору задачи
+        result = AsyncResult(task_id).get()
+        return JsonResponse({'message': f'Результат: {result}'})
+    except Exception as e:
+        return JsonResponse({'message': f'Произошла ошибка: {str(e)}'}, status=500)
 
 
-def submit(request, t_id):
+def submit(request, task_id):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         t_data = request.POST.get('task_data')
         print(t_data)
         print(type(t_data))
+        print(task_id)
 
         # сохранение данных в бд
         # task = Task.objects.get(pk=t_id)
-        # CodeSubmit.objects.create(task=task, code=t_data, submit_result = 0)
+        # CodeSubmit.objects.create(task=task, code=t_data, submit_result=0)
+        process = process_code_cpp.delay(t_data)
+        print(process.id)
 
-        result = process_code_cpp.delay(t_data)
-        
-        print(result.state, result.info, type(result))
-        return JsonResponse({'message': f'Результат: {result}'})
+        # Возвращаем идентификатор задачи
+        return JsonResponse({'process_id': process.id})
     return JsonResponse({'message': 'Неверный запрос'}, status=400)
 
 class IndexView(generic.ListView):
@@ -39,7 +49,7 @@ class IndexView(generic.ListView):
     def get_queryset(self) -> QuerySet[Any]:
         return Task.objects.order_by("-id")[:5]
 
-def task(request, t_id):
-    t = get_object_or_404(Task, pk=t_id)
+def task(request, task_id):
+    t = get_object_or_404(Task, pk=task_id)
     return render(request, "tasks/detail.html", {"task": t},)
 
