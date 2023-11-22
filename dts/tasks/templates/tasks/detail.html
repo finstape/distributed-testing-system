@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Ваш заголовок и другие мета-данные -->
 
     <!-- Включение токена CSRF -->
     <script type="text/javascript">
@@ -24,22 +25,42 @@
     </script>
 </head>
 <body>
-    <h2>{{ task.task_name }}</h2> 
+    <h2>{{ task.task_name }}</h2> <!-- Вставка имени задачи -->
 
-    <p>{{ task.description }}</p>
+    <p>{{ task.description }}</p> <!-- Вставка описания задачи -->
 
     <form id="task-form" method="POST">
         {% csrf_token %}
-        
-        <input type="text" name="task_data">
+        <!-- Ваши поля формы здесь -->
+        <p><textarea name="task_data"></textarea></p>
         <button type="submit" id="submit-button">Отправить</button>
     </form>
 
-    
+    <div id="result-container"></div>
+
+    <!-- Подключение библиотеки jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    
+    <!-- Ваш собственный скрипт -->
     <script>
+        function getResult(taskId) {
+            var _url = "{% url 'tasks:get_result' 0 %}".replace('0', taskId);
+            $.ajax({
+                type: 'GET',
+                url: _url, 
+                success: function(response) {
+                    // Обработка ответа
+                    console.log(response.message);
+                    $('#result-container').text(response.message);
+                },
+                error: function(error) {
+                    // Обработка ошибки
+                    console.log('Произошла ошибка: ' + error);
+                    $('#result-container').text('Произошла ошибка (get): ' + error);
+                }
+            });
+        }
+
         $(document).ready(function() {
             $('#task-form').submit(function(event) {
                 event.preventDefault();
@@ -59,12 +80,13 @@
                     url: "{% url 'tasks:submit' task.id %}",
                     data: formData,
                     success: function(response) {
-                        // todo: Обработка ответа
-                        console.log(response.message);
+                        var processId = response.process_id;
+                        console.log(processId);
+                        getResult(processId);
                     },
                     error: function(error) {
-                        // todo: Обработка ошибки
                         console.log('Произошла ошибка: ' + error);
+                        $('#result-container').text('Произошла ошибка (post): ' + error);
                     }
                 });
             });

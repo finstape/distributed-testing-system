@@ -1,9 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
-
 # Устанавливаем переменную окружения, чтобы указать Django на файл настроек
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'your_project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dts.settings')
 
 # Создаем экземпляр Celery
 app = Celery('dts')
