@@ -7,7 +7,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dts.settings')
 
 # Создаем экземпляр Celery
 app = Celery('dts')
-broker_connection_retry_on_startup = True 
+broker_connection_retry_on_startup = True
 BROKER_CONNECTION_TIMEOUT = 10
 broker_transport_options = {'credentials_transport': 'AMQPLAIN'}
 

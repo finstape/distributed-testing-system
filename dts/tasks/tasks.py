@@ -2,10 +2,10 @@ from celery import shared_task
 from time import sleep
 import os
 
-
 import subprocess
 
 checker_code = os.path.join(os.path.dirname(__file__), "checker.cpp")
+
 
 @shared_task
 def process_code_cpp(request_data):
