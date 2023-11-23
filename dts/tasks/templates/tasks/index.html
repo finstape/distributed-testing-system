@@ -1,9 +1,25 @@
-{% if lastest_tasks_list %}
-<ul>
-    {% for task in lastest_tasks_list %}
-        <li><a href="{% url 'tasks:task_details' task.id %}">{{ task.task_name }}</a></li>
-    {% endfor %}
-</ul>
-{% else %}
-    <p>No tasks are available.</p>
-{% endif %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список задач • DTS</title>
+    <link rel="stylesheet" href="{% static 'tasks.css' %}" type="text/css">
+    <link rel="shortcut icon" href="https://img.icons8.com/emoji/48/russia-emoji.png" type="image/png">
+</head>
+<body>
+    {% if lastest_tasks_list %}
+    <ul>
+        {% for task in lastest_tasks_list %}
+            <li><a href="{% url 'tasks:task_details' task.id %}">{{ task.task_name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p>No tasks are available.</p>
+    {% endif %}
+
+    {% load static %}
+</body>
+</html>
+

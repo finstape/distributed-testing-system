@@ -1,8 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <!-- Ваш заголовок и другие мета-данные -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>{{ task.task_name }} • DTS</title>
+    <link rel="stylesheet" href="{% static 'detail.css' %}" type="text/css">
+    <link rel="shortcut icon" href="https://img.icons8.com/emoji/48/russia-emoji.png" type="image/png">
 
     <!-- Включение токена CSRF -->
     <script type="text/javascript">
@@ -25,9 +29,17 @@
     </script>
 </head>
 <body>
+    <header>
+        <div class="container">
+            <nav>
+                <h1>DTS</h1>
+                <h1><a href="{% url 'tasks:index' %}">Задачи</a></h1>
+            </nav>
+        </div>
+    </header>
     <h2>{{ task.task_name }}</h2> <!-- Вставка имени задачи -->
 
-    <p>{{ task.description }}</p> <!-- Вставка описания задачи -->
+    <p>{{ task.description|safe }}</p> <!-- Вставка описания задачи -->
 
     <form id="task-form" method="POST">
         {% csrf_token %}
