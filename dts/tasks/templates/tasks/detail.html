@@ -1,108 +1,255 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>{{ task.task_name }} • DTS</title>
-    <link rel="stylesheet" href="{% static 'detail.css' %}" type="text/css">
-    <link rel="shortcut icon" href="https://img.icons8.com/emoji/48/russia-emoji.png" type="image/png">
+<html lang="ru" class="no-js">
+    <!-- BEGIN HEAD -->
+    <head>
+        <meta charset="utf-8"/>
+        <title>{{ task.task_name }} • DTS</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1" name="viewport"/>
+        <meta content="" name="description"/>
+        <meta content="" name="author"/>
 
-    <!-- Включение токена CSRF -->
-    <script type="text/javascript">
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = cookies[i].trim();
-                    // Имя cookie совпадает с именем CSRF-токена, как правило, 'csrftoken'
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        var csrftoken = getCookie('csrftoken');
-    </script>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <nav>
-                <h1>DTS</h1>
-                <h1><a href="{% url 'tasks:index' %}">Задачи</a></h1>
-            </nav>
-        </div>
-    </header>
-    <h2>{{ task.task_name }}</h2> <!-- Вставка имени задачи -->
+                <!-- GLOBAL MANDATORY STYLES -->
+        <link href="http://fonts.googleapis.com/css?family=Hind:300,400,500,600,700" rel="stylesheet" type="text/css">
+        <link href="{% static 'vendor/simple-line-icons/simple-line-icons.min.css' %}" rel="stylesheet" type="text/css"/>
+        <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"/>
 
-    <p>{{ task.description|safe }}</p> <!-- Вставка описания задачи -->
+        <!-- PAGE LEVEL PLUGIN STYLES -->
+        <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+        <link href="{% static 'vendor/swiper/css/swiper.min.css' %}" rel="stylesheet" type="text/css"/>
 
-    <form id="task-form" method="POST">
-        {% csrf_token %}
-        <!-- Ваши поля формы здесь -->
-        <p><textarea name="task_data"></textarea></p>
-        <button type="submit" id="submit-button">Отправить</button>
-    </form>
+        <!-- THEME STYLES -->
+        <link href="{% static 'css/layout.min.css' %}" rel="stylesheet" type="text/css"/>
 
-    <div id="result-container"></div>
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="https://img.icons8.com/emoji/48/russia-emoji.png" type="image/png"/>
 
-    <!-- Подключение библиотеки jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <!-- Ваш собственный скрипт -->
-    <script>
-        function getResult(taskId) {
-            var _url = "{% url 'tasks:get_result' 0 %}".replace('0', taskId);
-            $.ajax({
-                type: 'GET',
-                url: _url, 
-                success: function(response) {
-                    // Обработка ответа
-                    console.log(response.message);
-                    $('#result-container').text(response.message);
-                },
-                error: function(error) {
-                    // Обработка ошибки
-                    console.log('Произошла ошибка: ' + error);
-                    $('#result-container').text('Произошла ошибка (get): ' + error);
-                }
-            });
-        }
-
-        $(document).ready(function() {
-            $('#task-form').submit(function(event) {
-                event.preventDefault();
-                var formData = $(this).serialize();
-
-                // Добавление токена CSRF к AJAX-запросу
-                $.ajaxSetup({
-                    beforeSend: function(xhr, settings) {
-                        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        <!-- Включение токена CSRF -->
+        <script type="text/javascript">
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = cookies[i].trim();
+                        // Имя cookie совпадает с именем CSRF-токена, как правило, 'csrftoken'
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
                         }
                     }
-                });
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+        </script>
+    </head>
+    <!-- END HEAD -->
 
+    <!-- BODY -->
+    <body>
+
+        <!--========== HEADER ==========-->
+        <header class="header navbar-fixed-top">
+            <!-- Navbar -->
+            <nav class="navbar" role="navigation">
+                <div class="container">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="menu-container">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+                            <span class="sr-only">Навигация</span>
+                            <span class="toggle-icon"></span>
+                        </button>
+
+                        <!-- Logo -->
+                        <div class="logo">
+                            <a class="logo-wrap" href="{% url 'tasks:index' %}">
+                                <img class="logo-img logo-img-main" src="{% static 'img/logo.png' %}" alt="Asentus Logo">
+                                <img class="logo-img logo-img-active" src="{% static 'img/logo-dark.png' %}" alt="Asentus Logo">
+                            </a>
+                        </div>
+                        <!-- End Logo -->
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse nav-collapse">
+                        <div class="menu-container">
+                            <ul class="navbar-nav navbar-nav-right">
+                                <li class="nav-item"><a class="nav-item-child nav-item-hover" href="main.html">Главная</a></li>
+                                <li class="nav-item"><a class="nav-item-child nav-item-hover" href="{% url 'tasks:index' %}">Задачи</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- End Navbar Collapse -->
+                </div>
+            </nav>
+            <!-- Navbar -->
+        </header>
+        <!--========== END HEADER ==========-->
+
+        <!--========== PARALLAX ==========-->
+        <div class="parallax-window" data-parallax="scroll" data-image-src="{% static 'img/1920x1080/01.jpg' %}">
+            <div class="parallax-content container">
+                <h1 class="carousel-title">Product Pricing</h1>
+                <p>Lorem ipsum dolor amet consectetur adipiscing dolore magna aliqua <br/> enim minim estudiat veniam siad venumus dolore</p>
+            </div>
+        </div>
+        <!--========== PARALLAX ==========-->
+
+        <!--========== PAGE LAYOUT ==========-->
+        <div class="content-lg container">
+            <h2>{{ task.task_name }}</h2> <!-- Вставка имени задачи -->
+
+            <p>{{ task.description|safe }}</p> <!-- Вставка описания задачи -->
+
+            <form id="task-form" method="POST">
+                {% csrf_token %}
+                <!-- Ваши поля формы здесь -->
+                <p><textarea name="task_data"></textarea></p>
+                <button type="submit" id="submit-button">Отправить</button>
+            </form>
+
+            <div id="result-container"></div>
+        </div>    
+        <!--========== END PAGE LAYOUT ==========-->
+
+        <!--========== FOOTER ==========-->
+        <footer class="footer">
+            <!-- Links -->
+            <div class="footer-seperator">
+                <div class="content-lg container">
+                    <div class="row">
+                        <div class="col-sm-2 sm-margin-b-50">
+                            <!-- List -->
+                            <ul class="list-unstyled footer-list">
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">Home</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">About</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">Products</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">Pricing</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">Clients</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">Careers</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">Contact</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">Terms</a></li>
+                            </ul>
+                            <!-- End List -->
+                        </div>
+                        <div class="col-sm-4 sm-margin-b-30">
+                            <!-- List -->
+                            <ul class="list-unstyled footer-list">
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">Twitter</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">Facebook</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">Instagram</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="#">YouTube</a></li>
+                            </ul>
+                            <!-- End List -->
+                        </div>
+                        <div class="col-sm-5 sm-margin-b-30">
+                            <h2 class="color-white">Send Us A Note</h2>
+                            <input type="text" class="form-control footer-input margin-b-20" placeholder="Name" required>
+                            <input type="email" class="form-control footer-input margin-b-20" placeholder="Email" required>
+                            <input type="text" class="form-control footer-input margin-b-20" placeholder="Phone" required>
+                            <textarea class="form-control footer-input margin-b-30" rows="6" placeholder="Message" required></textarea>
+                            <button type="submit" class="btn-theme btn-theme-sm btn-base-bg text-uppercase">Submit</button>
+                        </div>
+                    </div>
+                    <!--// end row -->
+                </div>
+            </div>
+            <!-- End Links -->
+
+            <!-- Copyright -->
+            <div class="content container">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <img class="footer-logo" src="{% static 'img/logo.png' %}" alt="Asentus Logo">
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <p class="margin-b-0"><a class="color-base fweight-600" href="https://github.com/finstape/distributed-testing-system">Авторы</a>: Агишев Артур, Меркушев Егор, Осовский Никита, Ткачёв Александр</p>
+                    </div>
+                </div>
+                <!--// end row -->
+            </div>
+            <!-- End Copyright -->
+        </footer>
+        <!--========== END FOOTER ==========-->
+
+        <!-- Back To Top -->
+        <a href="javascript:void(0);" class="js-back-to-top back-to-top">▲</a>
+
+        <!-- JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
+        <!-- CORE PLUGINS -->
+        <script src="{% static 'vendor/jquery.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'vendor/jquery-migrate.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
+
+        <!-- PAGE LEVEL PLUGINS -->
+        <script src="{% static 'vendor/jquery.easing.js' %}" type="text/javascript"></script>
+        <script src="{% static 'vendor/jquery.back-to-top.js' %}" type="text/javascript"></script>
+        <script src="{% static 'vendor/jquery.smooth-scroll.js' %}" type="text/javascript"></script>
+        <script src="{% static 'vendor/jquery.wow.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'vendor/jquery.parallax.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'vendor/swiper/js/swiper.jquery.min.js' %}" type="text/javascript"></script>
+
+        <!-- PAGE LEVEL SCRIPTS -->
+        <script src="{% static 'js/layout.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'js/components/wow.min.js' %}" type="text/javascript"></script>
+        <script src="{% static 'js/components/swiper.min.js' %}" type="text/javascript"></script>
+
+        <!-- Подключение библиотеки jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Ваш собственный скрипт -->
+        <script>
+            function getResult(taskId) {
+                var _url = "{% url 'tasks:get_result' 0 %}".replace('0', taskId);
                 $.ajax({
-                    type: 'POST',
-                    url: "{% url 'tasks:submit' task.id %}",
-                    data: formData,
+                    type: 'GET',
+                    url: _url,
                     success: function(response) {
-                        var processId = response.process_id;
-                        console.log(processId);
-                        getResult(processId);
+                        // Обработка ответа
+                        console.log(response.message);
+                        $('#result-container').text(response.message);
                     },
                     error: function(error) {
+                        // Обработка ошибки
                         console.log('Произошла ошибка: ' + error);
-                        $('#result-container').text('Произошла ошибка (post): ' + error);
+                        $('#result-container').text('Произошла ошибка (get): ' + error);
                     }
                 });
+            }
+
+            $(document).ready(function() {
+                $('#task-form').submit(function(event) {
+                    event.preventDefault();
+                    var formData = $(this).serialize();
+
+                    // Добавление токена CSRF к AJAX-запросу
+                    $.ajaxSetup({
+                        beforeSend: function(xhr, settings) {
+                            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            }
+                        }
+                    });
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'tasks:submit' task.id %}",
+                        data: formData,
+                        success: function(response) {
+                            var processId = response.process_id;
+                            console.log(processId);
+                            getResult(processId);
+                        },
+                        error: function(error) {
+                            console.log('Произошла ошибка: ' + error);
+                            $('#result-container').text('Произошла ошибка (post): ' + error);
+                        }
+                    });
+                });
             });
-        });
-    </script>
-</body>
+        </script>
+    </body>
+    <!-- END BODY -->
 </html>
