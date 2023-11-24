@@ -6,6 +6,8 @@ from django.db import models
 class Task(models.Model):
     task_name = models.CharField(max_length=100)
     description = models.TextField()
+    input_data = models.CharField(max_length=1000)
+    output_data = models.CharField(max_length=1000)
 
     def __str__(self):
         return self.task_name

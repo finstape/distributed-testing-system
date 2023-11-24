@@ -9,7 +9,7 @@ class CTestInLine(admin.TabularInline):
 
 class TaskAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {"fields": ["task_name", "description"]}),
+        (None, {"fields": ["task_name", "description", "input_data", "output_data"]}),
     ]
     inlines = [CTestInLine]
     list_display = ["task_name", "description"]
