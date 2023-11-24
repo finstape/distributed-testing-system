@@ -19,7 +19,7 @@ from django.urls import path, include, reverse
 from django.shortcuts import redirect
 
 urlpatterns = [
-    path('', lambda request: redirect(reverse('tasks:index'))),
+    path('', lambda request: redirect(reverse('tasks:base'))),
     path('admin/', admin.site.urls),
     path('tasks/', include('tasks.urls')),
 ]

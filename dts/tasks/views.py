@@ -46,6 +46,9 @@ class IndexView(generic.ListView):
 
     def get_queryset(self) -> QuerySet[Any]:
         return Task.objects.order_by("-id")[:5]
+    
+def base(request):
+    return render(request, "tasks/main.html")
 
 
 def task(request, task_id):
