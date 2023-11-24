@@ -99,7 +99,13 @@
 
         <!--========== PAGE LAYOUT ==========-->
         <div class="content-lg container">
-            <p>{{ task.description|safe }}</p> <!-- Вставка описания задачи -->
+            <!-- Вставка описания задачи -->
+            <h3>Условие<h3>
+            <p>{{ task.description }}</p>
+            <h3>Входные данные</h3>
+            <p>{{ task.input_data }}</p>
+            <h3>Выходные данные</h3>
+            <p>{{ task.output_data }}</p>
 
             <form id="task-form" method="POST">
                 {% csrf_token %}
