@@ -56,7 +56,7 @@
                     <div class="collapse navbar-collapse nav-collapse">
                         <div class="menu-container">
                             <ul class="navbar-nav navbar-nav-right">
-                                <li class="nav-item"><a class="nav-item-child nav-item-hover" href="main.html">Главная</a></li>
+                                <li class="nav-item"><a class="nav-item-child nav-item-hover" href="{% url 'tasks:base' %}">Главная</a></li>
                                 <li class="nav-item"><a class="nav-item-child nav-item-hover active" href="{% url 'tasks:index' %}">Задачи</a></li>
                             </ul>
                         </div>
@@ -78,19 +78,6 @@
         <!--========== PARALLAX ==========-->
 
         <!--========== PAGE LAYOUT ==========-->
-        <div class="content-lg container">
-            {% if lastest_tasks_list %}
-            <ul>
-                {% for task in lastest_tasks_list %}
-                    <li><a href="{% url 'tasks:task_details' task.id %}">{{ task.task_name }}</a></li>
-                {% endfor %}
-            </ul>
-            {% else %}
-                <p>No tasks are available.</p>
-            {% endif %}
-
-            {% load static %}
-        </div>
         <!-- Our Exceptional Solutions -->
         <div class="content-lg container">
             <div class="row margin-b-40">
@@ -102,6 +89,7 @@
             <!--// end row -->
 
             <div class="row margin-b-50">
+                {% for task in lastest_tasks_list %}
                 <!-- Our Exceptional Solutions -->
                 <div class="col-sm-4 sm-margin-b-50">
                     <div class="margin-b-20">
@@ -109,7 +97,7 @@
                             <img class="img-responsive" src="{% static 'img/970x647/01.jpg' %}" alt="Our Exceptional Solutions Image">
                         </div>
                     </div>
-                    <h3><a href="#">Triangle Roof</a> <span class="text-uppercase margin-l-20">Management</span></h3>
+                    <h4><a href="{% url 'tasks:task_details' task.id %}">{{ task.task_name }}</a> <span class="text-uppercase margin-l-20">Management</span></h4>
                     <p>Lorem ipsum dolor sit amet consectetur adipiscing elit sed tempor incdidunt ut laboret dolor magna ut consequat siad esqudiat dolor</p>
                     <a class="link" href="#">Read More</a>
                 </div>
@@ -122,7 +110,7 @@
                             <img class="img-responsive" src="{% static 'img/970x647/02.jpg' %}" alt="Our Exceptional Solutions Image">
                         </div>
                     </div>
-                    <h4><a href="#">Curved Corners</a> <span class="text-uppercase margin-l-20">Developmeny</span></h4>
+                    <h4><a href="{% url 'tasks:task_details' task.id %}">{{ task.task_name }}</a> <span class="text-uppercase margin-l-20">Developmeny</span></h4>
                     <p>Lorem ipsum dolor sit amet consectetur adipiscing elit sed tempor incdidunt ut laboret dolor magna ut consequat siad esqudiat dolor</p>
                     <a class="link" href="#">Read More</a>
                 </div>
@@ -135,13 +123,16 @@
                             <img class="img-responsive" src="{% static 'img/970x647/03.jpg' %}" alt="Our Exceptional Solutions Image">
                         </div>
                     </div>
-                    <h4><a href="#">Bird On Green</a> <span class="text-uppercase margin-l-20">Design</span></h4>
+                    <h4><a href="{% url 'tasks:task_details' task.id %}">{{ task.task_name }}</a> <span class="text-uppercase margin-l-20">Design</span></h4>
                     <p>Lorem ipsum dolor sit amet consectetur adipiscing elit sed tempor incdidunt ut laboret dolor magna ut consequat siad esqudiat dolor</p>
                     <a class="link" href="#">Read More</a>
                 </div>
                 <!-- End Our Exceptional Solutions -->
+                {% endfor %}
+                {% load static %}
             </div>
             <!--// end row -->
+            
 
             <div class="row">
                 <!-- Our Exceptional Solutions -->
@@ -197,7 +188,7 @@
                         <div class="col-sm-2 sm-margin-b-50">
                             <!-- List -->
                             <ul class="list-unstyled footer-list">
-                                <li class="footer-list-item"><a class="footer-list-link" href="#">Главная</a></li>
+                                <li class="footer-list-item"><a class="footer-list-link" href="{% url 'tasks:base' %}">Главная</a></li>
                                 <li class="footer-list-item"><a class="footer-list-link" href="{% url 'tasks:index' %}">Задачи</a></li>
                             </ul>
                             <!-- End List -->
