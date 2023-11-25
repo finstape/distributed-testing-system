@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import Task
 
-import tasks
+from tasks.tasks import process_code_cpp
 from celery.result import AsyncResult
 
 
@@ -32,7 +32,7 @@ def submit(request, task_id):
         # сохранение данных в бд
         # task = Task.objects.get(pk=t_id)
         # CodeSubmit.objects.create(task=task, code=t_data, submit_result=0)
-        process = tasks.process_code_cpp.delay(t_data)
+        process = process_code_cpp.delay(t_data)
         print(process.id)
 
         # Возвращаем идентификатор задачи

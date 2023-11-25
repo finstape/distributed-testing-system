@@ -27,7 +27,7 @@ SECRET_KEY = '26Gk},Gp(tRE2x(Pc>D:jgs/P|A[THzOL$Jb7XiU~jmI61txdm4vwohwd!skt4(i#*
 DEBUG = True
 
 # ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['5.42.220.174', 'distributedtestingsystem.duckdns.org']
 
 
 # Application definition
@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'dts.wsgi.application'
 ASGI_APPLICATION = "dts.asgi.application"
 
 # SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = True
 
 
@@ -86,8 +86,8 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "dts_tasks",
-        "USER": "florell",
-        "PASSWORD": "qsister1",
+        "USER": "nikita",
+        "PASSWORD": "12345",
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }
@@ -128,8 +128,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-CELERY_BROKER_URL = 'amqp://dj-dts:zumfy6-zYkteg-mivvav@localhost:5672/'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'amqp://dj-dts:zumfy6-zYkteg-mivvav@5.42.220.174/myhost'
+#CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'rpc://'
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'tasks', 'static')]

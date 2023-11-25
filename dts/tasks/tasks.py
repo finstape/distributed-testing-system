@@ -1,4 +1,5 @@
 from celery import shared_task
+from celery import Celery
 from time import sleep
 import os
 
@@ -8,8 +9,12 @@ testing_system_path = os.path.join(os.path.dirname(__file__), "testing_system")
 checker_path = os.path.join(testing_system_path, "checker.cpp")
 task_path = os.path.join(testing_system_path, "task1")
 
+app = Celery('dts', broker='amqp://dj-dts:zumfy6-zYkteg-mivvav@5.42.220.174/myhost',
+             backend='amqp://',
+             include=['dts.tasks'])
 
-@shared_task
+
+@shared_task()
 def process_code_cpp(request_data):
     cpp_filename = os.path.join(testing_system_path, "source.cpp")
 
