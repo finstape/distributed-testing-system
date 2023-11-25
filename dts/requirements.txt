@@ -80,4 +80,8 @@ twisted~=23.10.0
 twisted-iocpsuppo
 rt~=1.0.4 txaio~=23.1.1
 zope-interface~=6.1
+<<<<<<< HEAD
 >>>>>>> 8b8e4275cd46684fff0354b8e6efcb05a4c64331
+=======
+redis~=4.6.0
+>>>>>>> 07dede3f4fa17ef652a5539c2a183e6044938c23

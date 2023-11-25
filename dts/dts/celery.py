@@ -11,7 +11,7 @@ BROKER_CONNECTION_TIMEOUT = 10
 broker_transport_options = {'credentials_transport': 'AMQPLAIN'}
 
 # Загружаем конфигурацию из файла Django settings.py
-app.config_from_object('django.conf:settings', namespace='CELERY')
+app.config_from_object('django.conf:settings')
 
 # Автоматически обнаруживаем и регистрируем задачи из файлов tasks.py в приложениях Django
 app.autodiscover_tasks()
