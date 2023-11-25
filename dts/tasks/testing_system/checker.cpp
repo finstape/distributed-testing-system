@@ -10,7 +10,7 @@
 
 // {verdict, test, max_time_used, max_memory_used}
 struct res {
-    string verdict;
+    std::string verdict;
     int count;
     double time;
     double memory;
@@ -43,7 +43,7 @@ void run_source(std::string &task_input, int &test_index) {
     int run_status = system(("/usr/bin/time -o temp_runtime_info.txt -f \"%U %M\" bash -c 'cat " + task_input + " | timeout " + max_runtime_awake + " ./temp_program > temp_output.txt'").c_str());
     if (run_status != 0) {
         result.verdict = "RE";   // вычисление RE неподтверждено
-        result.count = std::to_string(test_index);
+        result.count = test_index;
         exit_program(1);
     }
 }
