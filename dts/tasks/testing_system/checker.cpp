@@ -9,10 +9,18 @@
 #include <thread>
 
 // {verdict, test, max_time_used, max_memory_used}
-std::vector <std::string> result(4);
+struct res {
+    string verdict;
+    int count;
+    double time;
+    double memory;
+
+};
+
+res result;
 
 void return_result() {
-    std::cout << result[0] << " " << result[1] << " " << result[2] << " " << result[3];
+    std::cout << result.verdict << " " << result.count << " " << result.time << "s " << result.memory << "Mb";
 }
 
 void exit_program(int code) {
@@ -34,8 +42,8 @@ void run_source(std::string &task_input, int &test_index) {
     system("touch temp_runtime_info.txt");
     int run_status = system(("/usr/bin/time -o temp_runtime_info.txt -f \"%U %M\" bash -c 'cat " + task_input + " | timeout " + max_runtime_awake + " ./temp_program > temp_output.txt'").c_str());
     if (run_status != 0) {
-        result[0] = "RE";   // вычисление RE неподтверждено
-        result[1] = std::to_string(test_index);
+        result.verdict = "RE";   // вычисление RE неподтверждено
+        result.count = std::to_string(test_index);
         exit_program(1);
     }
 }
@@ -88,10 +96,10 @@ int main(int argc, char** argv) {
     // Компилируем
     int compile_status = system("g++ -O2 temp_source.cpp -o temp_program");
     if (compile_status != 0) {
-        result[0] = "CE";
-        result[1] = "1";
-        result[2] = "0";
-        result[3] = "0";
+        result.verdict = "CE";
+        result.count = 1;
+        result.time = 0.0;
+        result.memory = 0.0;
         return_result();
         exit_program(1);
     }
@@ -100,7 +108,7 @@ int main(int argc, char** argv) {
         std::string task_input = task_name + "/" + std::to_string(i) + ".in";
 
         // Меняем номер теста в результате
-        result[1] = std::to_string(i);
+        result.count = i;
 
         // Запускаем
         std::atomic<bool> is_done(false);
@@ -120,8 +128,8 @@ int main(int argc, char** argv) {
 
         if (!is_done) {
             t.detach();
-            result[0] = "TL";
-            result[2] = "2000";
+            result.verdict = "TL";
+            result.time = 2;
             return_result();
             exit_program(2);
         }
@@ -131,20 +139,19 @@ int main(int argc, char** argv) {
         get_runtime_info(time_usage, memory_usage);
         if (time_usage > time_limit || memory_usage > memory_limit) {
             if (time_usage > time_limit) {
-                result[0] = "TL";
-                result[2] = std::to_string(time_limit);
-                result[3] = std::to_string(memory_usage);
+                result.verdict = "TL";
+                result.time = time_limit;
+                result.memory = memory_usage;
             } else {
-                result[0] = "ML";
-                result[2] = std::to_string(time_usage);
-                result[3] = std::to_string(memory_limit);
+                result.verdict = "ML";
+                result.time = time_usage;
+                result.memory = memory_limit;
             }
             return_result();
             exit_program(2);
         }
-
-        result[2] = std::to_string(std::max(std::stod(result[2]), time_usage));
-        result[3] = std::to_string(std::max(std::stod(result[3]), memory_usage));
+        if (time_usage > result.time) result.time = time_usage;
+        if (memory_usage > result.memory) result.memory = memory_usage;
 
         std::vector<std::string> correct_data, temp_data;
         std::string temp_str;
@@ -166,9 +173,9 @@ int main(int argc, char** argv) {
         source_output.close();
         bool is_OK = true;
         if (correct_data.size() != temp_data.size()) {
-            result[0] = "PE";
-            result[2] = std::to_string(time_usage);
-            result[3] = std::to_string(memory_usage);
+            result.verdict = "PE";
+            result.time = time_usage;
+            result.memory = memory_usage;
             return_result();
             exit_program(2);
         }
@@ -180,15 +187,15 @@ int main(int argc, char** argv) {
             }
         }
         if (!is_OK) {
-            result[0] = "WA";
-            result[2] = std::to_string(time_usage);
-            result[3] = std::to_string(memory_usage);
+            result.verdict = "WA";
+            result.time = time_usage;
+            result.memory = memory_usage;
             return_result();
             exit_program(2);
         }
     }
 
-    result[0] = "OK";
+    result.verdict = "OK";
     return_result();
     exit_program(0);
 }
