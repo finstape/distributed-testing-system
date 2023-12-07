@@ -128,9 +128,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-CELERY_BROKER_URL = 'amqp://dj-dts:zumfy6-zYkteg-mivvav@5.42.220.174/myhost'
-#CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_BROKER_URL = 'amqp://dj-dts:zumfy6-zYkteg-mivvav@5.42.220.174:5672/myhost'
+#CELERY_RESULT_BACKEND = 'redis://5.42.220.174:6379'
+CELERY_RESULT_BACKEND = 'rpc://5.42.220.174:5672'
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'tasks', 'static')]

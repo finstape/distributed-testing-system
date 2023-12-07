@@ -7,11 +7,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dts.settings')
 # Создаем экземпляр Celery
 app = Celery('dts')
 broker_connection_retry_on_startup = True 
-BROKER_CONNECTION_TIMEOUT = 10
-broker_transport_options = {'credentials_transport': 'AMQPLAIN'}
+BROKER_CONNECTION_TIMEOUT = 1000
+#broker_transport_options = {'credentials_transport': 'AMQPLAIN'}
 
 # Загружаем конфигурацию из файла Django settings.py
-app.config_from_object('django.conf:settings')
+app.config_from_object('django.conf:settings', namespace="CELERY")
 
 # Автоматически обнаруживаем и регистрируем задачи из файлов tasks.py в приложениях Django
 app.autodiscover_tasks()
