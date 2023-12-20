@@ -32,7 +32,7 @@ def submit(request, task_id):
         # сохранение данных в бд
         # task = Task.objects.get(pk=t_id)
         # CodeSubmit.objects.create(task=task, code=t_data, submit_result=0)
-        process = process_code_cpp.delay(t_data)
+        process = process_code_cpp.delay(t_data, task_id)
         print(process.id)
 
         # Возвращаем идентификатор задачи

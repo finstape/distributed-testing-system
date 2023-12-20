@@ -7,11 +7,10 @@ import subprocess
 
 testing_system_path = os.path.join(os.path.dirname(__file__), "testing_system")
 checker_path = os.path.join(testing_system_path, "checker.cpp")
-task_path = os.path.join(testing_system_path, "task1")
-
 @shared_task()
-def process_code_cpp(request_data):
+def process_code_cpp(request_data, task_id):
     cpp_filename = os.path.join(testing_system_path, "source.cpp")
+    task_path = os.path.join(testing_system_path, f"task{task_id}")
 
     with open(cpp_filename, "w") as cpp_file:
         cpp_file.write(request_data)
