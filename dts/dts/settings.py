@@ -132,8 +132,9 @@ CELERY_BROKER_URL = 'amqp://dj-dts:zumfy6-zYkteg-mivvav@5.42.220.174:5672/myhost
 #CELERY_RESULT_BACKEND = 'redis://5.42.220.174:6379'
 CELERY_RESULT_BACKEND = 'rpc://5.42.220.174:5672'
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'tasks', 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
